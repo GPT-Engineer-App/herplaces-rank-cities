@@ -22,42 +22,42 @@ const fromSupabase = async (query) => {
 // EXAMPLE TYPES SECTION
 // DO NOT USE TYPESCRIPT
 
-Foo // table: foos
+table: foos
     id: number
     title: string
 
-Bar // table: bars
+table: bars
     id: number
-    foo_id: number // foreign key to Foo
+    foo_id: number // foreign key to foos
 	
 */
 
 // Example hook for models
 
 export const useFoo = ()=> useQuery({
-    queryKey: ['foo'],
-    queryFn: fromSupabase(supabase.from('foo')),
+    queryKey: ['foos'],
+    queryFn: fromSupabase(supabase.from('foos')),
 })
 export const useAddFoo = () => {
     const queryClient = useQueryClient();
     return useMutation({
-        mutationFn: (newFoo)=> fromSupabase(supabase.from('foo').insert([{ title: newFoo.title }])),
+        mutationFn: (newFoo)=> fromSupabase(supabase.from('foos').insert([{ title: newFoo.title }])),
         onSuccess: ()=> {
-            queryClient.invalidateQueries('foo');
+            queryClient.invalidateQueries('foos');
         },
     });
 };
 
 export const useBar = ()=> useQuery({
-    queryKey: ['bar'],
-    queryFn: fromSupabase(supabase.from('bar')),
+    queryKey: ['bars'],
+    queryFn: fromSupabase(supabase.from('bars')),
 })
 export const useAddBar = () => {
     const queryClient = useQueryClient();
     return useMutation({
-        mutationFn: (newBar)=> fromSupabase(supabase.from('bar').insert([{ foo_id: newBar.foo_id }])),
+        mutationFn: (newBar)=> fromSupabase(supabase.from('bars').insert([{ foo_id: newBar.foo_id }])),
         onSuccess: ()=> {
-            queryClient.invalidateQueries('bar');
+            queryClient.invalidateQueries('bars');
         },
     });
 };
