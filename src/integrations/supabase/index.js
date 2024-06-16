@@ -19,46 +19,51 @@ const fromSupabase = async (query) => {
 
 /* supabase integration types
 
-// EXAMPLE TYPES SECTION
-// DO NOT USE TYPESCRIPT
-
-Foo // table: foos
+table: signing
     id: number
-    title: string
+    created_at: string
 
-Bar // table: bars
-    id: number
-    foo_id: number // foreign key to Foo
-	
 */
 
-// Example hook for models
+// Hooks for signing table
 
-export const useFoo = ()=> useQuery({
-    queryKey: ['foo'],
-    queryFn: fromSupabase(supabase.from('foo')),
-})
-export const useAddFoo = () => {
+export const useSignings = () => useQuery({
+    queryKey: ['signings'],
+    queryFn: () => fromSupabase(supabase.from('signing').select('*')),
+});
+
+export const useSigning = (id) => useQuery({
+    queryKey: ['signing', id],
+    queryFn: () => fromSupabase(supabase.from('signing').select('*').eq('id', id).single()),
+});
+
+export const useAddSigning = () => {
     const queryClient = useQueryClient();
     return useMutation({
-        mutationFn: (newFoo)=> fromSupabase(supabase.from('foo').insert([{ title: newFoo.title }])),
-        onSuccess: ()=> {
-            queryClient.invalidateQueries('foo');
+        mutationFn: (newSigning) => fromSupabase(supabase.from('signing').insert([newSigning])),
+        onSuccess: () => {
+            queryClient.invalidateQueries('signings');
         },
     });
 };
 
-export const useBar = ()=> useQuery({
-    queryKey: ['bar'],
-    queryFn: fromSupabase(supabase.from('bar')),
-})
-export const useAddBar = () => {
+export const useUpdateSigning = () => {
     const queryClient = useQueryClient();
     return useMutation({
-        mutationFn: (newBar)=> fromSupabase(supabase.from('bar').insert([{ foo_id: newBar.foo_id }])),
-        onSuccess: ()=> {
-            queryClient.invalidateQueries('bar');
+        mutationFn: (updatedSigning) => fromSupabase(supabase.from('signing').update(updatedSigning).eq('id', updatedSigning.id)),
+        onSuccess: () => {
+            queryClient.invalidateQueries('signings');
+            queryClient.invalidateQueries(['signing', updatedSigning.id]);
         },
     });
 };
 
+export const useDeleteSigning = () => {
+    const queryClient = useQueryClient();
+    return useMutation({
+        mutationFn: (id) => fromSupabase(supabase.from('signing').delete().eq('id', id)),
+        onSuccess: () => {
+            queryClient.invalidateQueries('signings');
+        },
+    });
+};
