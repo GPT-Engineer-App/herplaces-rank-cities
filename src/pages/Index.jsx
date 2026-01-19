@@ -9,8 +9,19 @@ const Index = () => {
   useEffect(() => {
     fetch("https://sheetdb.io/api/v1/etqnucv7a7cag")
       .then((response) => response.json())
-      .then((data) => setCities(data))
-      .catch((error) => console.error("Error fetching cities:", error));
+      .then((data) => {
+        // Ensure data is an array before setting state
+        if (Array.isArray(data)) {
+          setCities(data);
+        } else {
+          console.error("API response is not an array:", data);
+          setCities([]);
+        }
+      })
+      .catch((error) => {
+        console.error("Error fetching cities:", error);
+        setCities([]);
+      });
   }, []);
 
   const filteredCities = cities.filter((city) =>
